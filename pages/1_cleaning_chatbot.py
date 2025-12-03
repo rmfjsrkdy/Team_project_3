@@ -1,0 +1,96 @@
+import streamlit as st
+from openai import OpenAI
+import base64
+
+st.title("🧹 청소 챗봇")
+st.write("집안 청소가 고민되면 사진을 촬영하거나 질문을 입력해 보세요!")
+
+# OpenAI client (이미 세션에 저장됨)
+client = st.session_state.get('openai_client', None)
+
+
+# -------------------------------
+# 메시지 렌더링 함수
+# -------------------------------
+def show_message(msg):
+    st.chat_message(msg["role"]).write(msg["content"])
+
+
+# -------------------------------
+# 세션 초기화
+# -------------------------------
+if "clean_messages" not in st.session_state:
+    st.session_state.clean_messages = [
+        {
+            "role": "system",
+            "content": (
+                "너는 1인 가구 청소 전문가 AI야. "
+                "사용자가 보내는 사진(에어컨 필터, 화장실, 보일러, 곰팡이, 싱크대 등)을 기반으로 "
+                "현재 상태를 분석하고, 청소 난이도와 위험 요소를 설명한 뒤, "
+                "1) 지금 해야 할 우선 조치 "
+                "2) 필요한 준비물(최대한 집에 있을 만한 것 위주) "
+                "3) 단계별 청소 방법 "
+                "4) 주의사항 "
+                "5) 전문가를 불러야 하는 상황 여부 "
+                "를 간단하고 차분하게 설명해. "
+                "사진이 없으면 텍스트만으로도 최대한 도움을 줘."
+            )
+        }
+    ]
+
+
+# -------------------------------
+# 사진 입력
+# -------------------------------
+image = st.camera_input("📸 청소가 필요한 부분을 촬영하거나 업로드하세요")
+
+
+# -------------------------------
+# 기존 대화 출력
+# -------------------------------
+for msg in st.session_state.clean_messages:
+    if msg["role"] != "system":
+        show_message(msg)
+
+
+# -------------------------------
+# 텍스트 입력
+# -------------------------------
+if prompt := st.chat_input("무엇을 도와드릴까요?"):
+    
+    # 사용자 메시지 저장 + 출력
+    user_msg = {"role": "user", "content": prompt}
+    st.session_state.clean_messages.append(user_msg)
+    show_message(user_msg)
+
+    # content_list 구성 (텍스트 + 이미지)
+    content_list = [{"type": "input_text", "text": prompt}]
+
+    if image:
+        img_b64 = base64.b64encode(image.getvalue()).decode()
+        content_list.append({
+            "type": "input_image",
+            "image_url": f"data:image/jpeg;base64,{img_b64}"
+        })
+
+    # -------------------------------
+    # Responses API 호출
+    # -------------------------------
+    response = client.responses.create(
+        model="gpt-4.1",
+        input=[
+            *[
+                {"role": msg["role"], "content": msg["content"]}
+                for msg in st.session_state.clean_messages
+                if msg["role"] != "assistant"
+            ],
+            {"role": "user", "content": content_list},
+        ]
+    )
+
+    assistant_reply = response.output_text
+
+    # assistant 메시지 출력 및 저장
+    assistant_msg = {"role": "assistant", "content": assistant_reply}
+    show_message(assistant_msg)
+    st.session_state.clean_messages.append(assistant_msg)
