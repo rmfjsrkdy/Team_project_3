@@ -6,6 +6,7 @@ from openai import OpenAI
 def get_openai_client():
     API_KEY="sk-"
     client = OpenAI(api_key=API_KEY)
+    return client
     
 
 # 각 페이지에서 클라이언트를 사용할 때는 이렇게 호출합니다:
