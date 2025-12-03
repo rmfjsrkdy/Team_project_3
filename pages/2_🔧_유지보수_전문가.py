@@ -1,12 +1,9 @@
 import streamlit as st
 from openai import OpenAI
-import os
 
 st.title("🔧 집수리 해결사 챗봇")
 st.text("수리 및 유지보수가 필요하다면 언제든지 물어보세요!")
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
+client = OpenAI(api_key ="")
 if "chatbot_messages" not in st.session_state:
     st.session_state.chatbot_messages = [
         {"role":"system","content":f"""당신은 생활 고장 수리 및 유지보수를 잘하는 AI 해결사 입니다. 사용자의 문제를 응답받으면 해결방안을 간단하게 답변 하시오.
