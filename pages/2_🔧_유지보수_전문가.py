@@ -3,7 +3,7 @@ from openai import OpenAI
 
 st.title("🔧 집수리 해결사 챗봇")
 st.text("수리 및 유지보수가 필요하다면 언제든지 물어보세요!")
-client = OpenAI(api_key = "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")
+client = OpenAI(api_key = "sk")
 
 if "chatbot_messages" not in st.session_state:
     st.session_state.chatbot_messages = [
