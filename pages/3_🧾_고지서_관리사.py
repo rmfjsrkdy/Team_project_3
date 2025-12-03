@@ -1,11 +1,12 @@
 import streamlit as st
 from openai import OpenAI
 import base64
+from utils import get_openai_client
+
+client = get_openai_client()
 
 st.title("🧾 고지서 관리 챗봇")
-st.write("고지서를 촬영하거나 질문을 입력해 보세요!")
-
-client = st.session_state.get('openai_client', None)
+st.write("고지서를 촬영하거나 업로드하거나, 질문을 입력해 보세요!")
 
 
 # -------------------------------
@@ -34,25 +35,31 @@ if "bill_messages" not in st.session_state:
 
 
 # -------------------------------
-# 고지서 이미지 입력
+# 이미지 입력: 촬영 + 업로드 둘 다 가능
 # -------------------------------
-image = st.camera_input("📸 고지서를 업로드하거나 촬영하세요")
+st.subheader("📸 고지서 입력")
+
+camera_image = st.camera_input("카메라로 촬영하기")
+upload_image = st.file_uploader("또는 고지서를 업로드하세요", type=["jpg", "jpeg", "png"])
+
+# 카메라 사진이 우선, 없으면 업로드 이미지 사용
+image = camera_image or upload_image
 
 
 # -------------------------------
 # 채팅 기록 렌더링
 # -------------------------------
 for msg in st.session_state.bill_messages:
-    # system 메시지는 출력하지 않음
     if msg["role"] != "system":
         show_message(msg)
 
 
 # -------------------------------
-# 사용자의 텍스트 입력
+# 텍스트 입력
 # -------------------------------
 if prompt := st.chat_input("여기에 메시지를 입력하세요..."):
-    # 사용자 메시지 추가
+
+    # 사용자 메시지 추가 및 출력
     user_msg = {"role": "user", "content": prompt}
     show_message(user_msg)
     st.session_state.bill_messages.append(user_msg)
@@ -74,10 +81,9 @@ if prompt := st.chat_input("여기에 메시지를 입력하세요..."):
         model="gpt-4.1",
         input=[
             *[
-                # 기존 메시지 반영
                 {"role": msg["role"], "content": msg["content"]}
                 for msg in st.session_state.bill_messages
-                if msg["role"] != "assistant"  # assistant 중복 프롬프트 방지
+                if msg["role"] != "assistant"
             ],
             {"role": "user", "content": content_list},
         ]
@@ -85,7 +91,7 @@ if prompt := st.chat_input("여기에 메시지를 입력하세요..."):
 
     assistant_reply = response.output_text
 
-    # assistant 메시지 표시 및 저장
+    # assistant 메시지 저장 및 출력
     assistant_msg = {"role": "assistant", "content": assistant_reply}
     show_message(assistant_msg)
     st.session_state.bill_messages.append(assistant_msg)
