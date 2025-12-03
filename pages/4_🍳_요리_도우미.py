@@ -1,7 +1,9 @@
 import streamlit as st
 from openai import OpenAI
+from utils import get_openai_client
 
-client = OpenAI(api_key="sk_xxxx")
+client = get_openai_client()
+
 
 st.set_page_config(page_title="주방 문제 해결 챗봇", page_icon="🍳")
 
@@ -27,11 +29,11 @@ if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.chat_message("user").write(user_input)
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=st.session_state.messages
+    response = client.responses.create(
+        model="gpt-4.1",
+        input=st.session_state["messages"]
     )
-    bot_reply = response.choices[0].message.content
+    bot_reply = response.output_text
 
     st.session_state.messages.append({"role": "assistant", "content": bot_reply})
 
