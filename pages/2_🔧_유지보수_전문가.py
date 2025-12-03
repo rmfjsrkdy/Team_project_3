@@ -24,11 +24,9 @@ if prompt := st.chat_input("수리가 필요한 상황 입력하기"):
     st.session_state.chatbot_messages.append(msg)
 
     response = client.chat.completions.create(
-        model = "gpt-5-mini",
-        messages = st.session_state.chatbot_messages
+        model="gpt-4o-mini",  # ← gpt-5-mini는 존재하지 않음
+        messages=st.session_state.chatbot_messages
     )
-    msg = {"role":"assistant", "content":response.choices[0].message.content}
-    show_message(msg)
-    st.session_state.chatbot_messages.append(msg)
-
+    assistant_msg = {"role":"assistant", "content":response.choices[0].message.content}
+    show_message(assistant_msg)
     st.session_state.chatbot_messages.append(assistant_msg)
