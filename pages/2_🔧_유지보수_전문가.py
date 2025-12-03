@@ -14,6 +14,9 @@ def show_message(msg):
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
+if st.button("Clear"):
+    del st.session_state["messages"]
+
 for msg in st.session_state.chatbot_messages[1:]:
     show_message(msg)
 
@@ -23,7 +26,7 @@ if prompt := st.chat_input("수리가 필요한 상황 입력하기"):
     st.session_state.chatbot_messages.append(msg)
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",  # ← gpt-5-mini는 존재하지 않음
+        model="gpt-4o-mini", 
         messages=st.session_state.chatbot_messages
     )
     assistant_msg = {"role":"assistant", "content":response.choices[0].message.content}
