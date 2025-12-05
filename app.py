@@ -31,7 +31,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     if st.button("🧹 집안 청소 해결사", use_container_width=True):
-        st.switch_page("pages/1_🚮_집안 청소 해결사.py")
+        st.switch_page("pages/1_🧹_집안 청소 해결사.py")
 
     if st.button("🧾 고지서 관리사", use_container_width=True):
         st.switch_page("pages/3._🧾_고지서_관리사.py")
