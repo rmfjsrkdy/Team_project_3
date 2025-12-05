@@ -31,14 +31,15 @@ col1, col2 = st.columns(2)
 
 with col1:
     if st.button("🧹 집안 청소 해결사", use_container_width=True):
-        st.switch_page("pages/1_🧹_집안 청소 해결사.py")
+        st.switch_page("pages/1_cleaning.py")
 
     if st.button("🧾 고지서 관리사", use_container_width=True):
-        st.switch_page("pages/3._🧾_고지서_관리사.py")
+        st.switch_page("pages/3_bills.py")
 
 with col2:
     if st.button("🔧 유지보수 전문가", use_container_width=True):
-        st.switch_page("pages/2_🔧_유지보수_전문가.py")
+        st.switch_page("pages/2_maintenance.py")
 
     if st.button("🍳 요리 도우미", use_container_width=True):
-        st.switch_page("pages/4._🍳_요리_도우미.py")
+        st.switch_page("pages/4_kitchen.py")
+
