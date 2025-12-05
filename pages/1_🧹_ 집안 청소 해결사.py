@@ -5,10 +5,10 @@ import base64
 st.title("🧹 청소 챗봇")
 st.write("집안 청소가 고민되면 사진을 촬영하거나 질문을 입력해 보세요!")
 
-# OpenAI client (이미 세션에 저장됨)
+# OpenAI client (이미 메인에서 세션에 저장됨)
 client = st.session_state.get('openai_client', None)
 
-# 혹시 모를 None 방지용 (선택 사항이지만 안전하게)
+# 혹시 모를 None 방지용
 if client is None:
     st.error("⚠️ OpenAI 클라이언트가 없습니다. 메인 화면에서 API Key를 먼저 입력해 주세요.")
     st.stop()
@@ -66,8 +66,9 @@ for msg in st.session_state.clean_messages:
 # -------------------------------
 # 텍스트 입력
 # -------------------------------
-if prompt := st.chat_input("무엇을 도와드릴까요?"):
-    
+prompt = st.chat_input("무엇을 도와드릴까요?")
+
+if prompt:
     # 사용자 메시지 저장 + 출력
     user_msg = {"role": "user", "content": prompt}
     st.session_state.clean_messages.append(user_msg)
@@ -86,21 +87,31 @@ if prompt := st.chat_input("무엇을 도와드릴까요?"):
     # -------------------------------
     # Responses API 호출
     # -------------------------------
-    response = client.responses.create(
-        model="gpt-4.1",
-        input=[
-            *[
-                {"role": msg["role"], "content": msg["content"]}
-                for msg in st.session_state.clean_messages
-                if msg["role"] != "assistant"
-            ],
-            {"role": "user", "content": content_list},
-        ]
-    )
+    try:
+        with st.chat_message("assistant"):
+            with st.spinner("청소 방법을 고민 중이에요..."):
+                response = client.responses.create(
+                    model="gpt-4.1-mini",  # gpt-4.1도 가능, mini가 더 빠름
+                    input=[
+                        # system 프롬프트 1개만 써도 충분해서 이렇게 단순화
+                        {
+                            "role": "system",
+                            "content": st.session_state.clean_messages[0]["content"],
+                        },
+                        {
+                            "role": "user",
+                            "content": content_list,
+                        },
+                    ],
+                )
 
-    assistant_reply = response.output_text
+                assistant_reply = response.output_text
+                st.write(assistant_reply)
 
-    # assistant 메시지 출력 및 저장
-    assistant_msg = {"role": "assistant", "content": assistant_reply}
-    show_message(assistant_msg)
-    st.session_state.clean_messages.append(assistant_msg)
+        # assistant 메시지 저장
+        assistant_msg = {"role": "assistant", "content": assistant_reply}
+        st.session_state.clean_messages.append(assistant_msg)
+
+    except Exception as e:
+        # 에러를 화면에 보여주기
+        st.error(f"⚠️ OpenAI 요청 중 오류가 발생했어요: {e}")
