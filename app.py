@@ -1,26 +1,15 @@
-# app.py (임시 디버깅 버전)
-
 import streamlit as st
 import os
 
-st.title("디버깅 모드")
+st.title("메인 페이지")
 
-st.write("### 현재 작업 디렉토리 (cwd)")
-st.code(os.getcwd())
+st.write("청소 기능을 쓰려면 아래 링크를 눌러줘!")
 
-st.write("### 현재 디렉토리 안의 파일/폴더 목록")
-st.write(os.listdir())
-
-# pages 폴더 내용 확인
-if "pages" in os.listdir():
-    st.write("### pages 폴더 안의 파일 목록")
-    st.write(os.listdir("pages"))
-else:
-    st.error("'pages' 폴더를 현재 디렉토리에서 찾을 수 없습니다.")
+# ✅ 청소 페이지로 이동하는 링크(사이드바 메뉴 클릭과 동일한 효과)
+st.page_link("pages/1_cleaning_helper.py", label="🧹 청소 페이지로 이동")
 
 st.write("---")
-
-go = st.button("청소 페이지로 이동 시도")
-
-if go:
-    st.switch_page("pages/1_cleaning_helper.py")
+st.write("디버깅용 정보 (필요 없으면 지워도 됨)")
+st.code(os.getcwd())
+st.write(os.listdir())
+st.write(os.listdir("pages"))
