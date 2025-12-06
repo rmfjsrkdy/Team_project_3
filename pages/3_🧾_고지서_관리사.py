@@ -44,13 +44,24 @@ if "bill_messages" not in st.session_state:
 # -------------------------------
 # 이미지 입력: 촬영 + 업로드 둘 다 가능
 # -------------------------------
-st.subheader("📸 고지서 입력")
+use_image = st.checkbox("📷 카메라 또는 파일로 고지서 보내기")
 
-camera_image = st.camera_input("카메라로 촬영하기")
-upload_image = st.file_uploader("또는 고지서를 업로드하세요", type=["jpg", "jpeg", "png"])
+image = None
+if use_image:
+    option = st.radio(
+        "입력 방식을 선택하세요:",
+        ("카메라 촬영", "파일 업로드"),
+        horizontal=True
+    )
 
-# 카메라 사진이 우선, 없으면 업로드 이미지 사용
-image = camera_image or upload_image
+    if option == "카메라 촬영":
+        image = st.camera_input("고지서를 촬영해 주세요")
+
+    elif option == "파일 업로드":
+        image = st.file_uploader(
+            "고지서를 업로드하세요",
+            type=["jpg", "jpeg", "png"]
+        )
 
 
 # -------------------------------
@@ -84,17 +95,19 @@ if prompt := st.chat_input("여기에 메시지를 입력하세요..."):
     # -------------------------------
     # Responses API 호출
     # -------------------------------
-    response = client.responses.create(
-        model="gpt-4.1",
-        input=[
-            *[
-                {"role": msg["role"], "content": msg["content"]}
-                for msg in st.session_state.bill_messages
-                if msg["role"] != "assistant"
-            ],
-            {"role": "user", "content": content_list},
-        ]
-    )
+    with st.chat_message("assistant"):
+        with st.spinner("고지서 관리사 생각중..."):
+            response = client.responses.create(
+                model="gpt-4.1",
+                input=[
+                    *[
+                        {"role": msg["role"], "content": msg["content"]}
+                        for msg in st.session_state.bill_messages
+                        if msg["role"] != "assistant"
+                    ],
+                    {"role": "user", "content": content_list},
+                ]
+            )
 
     assistant_reply = response.output_text
 
