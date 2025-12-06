@@ -2,8 +2,6 @@ import streamlit as st
 from openai import OpenAI
 import base64
 
-st.set_page_config(page_title="🧹 집안 청소 해결사")
-
 st.title("🧹 집안 청소 해결사")
 st.write("집안 청소가 고민되면 사진을 촬영하거나 질문을 입력해 보세요!")
 
