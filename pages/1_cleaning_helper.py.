@@ -1,4 +1,6 @@
 import streamlit as st
+from openai import OpenAI
+import base64
 
 st.set_page_config(page_title="🧹 청소 도우미")
 
