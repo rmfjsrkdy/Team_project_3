@@ -1,46 +1,26 @@
+# app.py (임시 디버깅 버전)
+
 import streamlit as st
-from openai import OpenAI
+import os
 
-st.set_page_config(page_title="1인 가구 AI 해결사", layout="wide")
+st.title("디버깅 모드")
 
-# ----------------------------
-# 🔐 API Key 입력
-# ----------------------------
-st.sidebar.header("🔐 OpenAI API Key 입력")
+st.write("### 현재 작업 디렉토리 (cwd)")
+st.code(os.getcwd())
 
-api_key = st.sidebar.text_input(
-    "API Key를 입력하세요",
-    type="password",
-    placeholder="ex) sk-xxxx..."
-)
+st.write("### 현재 디렉토리 안의 파일/폴더 목록")
+st.write(os.listdir())
 
-if api_key:
-    st.session_state["openai_client"] = OpenAI(api_key=api_key)
-    st.sidebar.success("API Key 설정 완료!")
+# pages 폴더 내용 확인
+if "pages" in os.listdir():
+    st.write("### pages 폴더 안의 파일 목록")
+    st.write(os.listdir("pages"))
 else:
-    st.sidebar.warning("API Key가 입력될 때까지 기능이 비활성화됩니다.")
-    st.stop()
+    st.error("'pages' 폴더를 현재 디렉토리에서 찾을 수 없습니다.")
 
-# ----------------------------
-# 메인 화면
-# ----------------------------
-st.title("🏠 1인 가구 AI 해결사")
-st.write("원하는 AI 도우미를 선택하세요!")
+st.write("---")
 
-col1, col2 = st.columns(2)
+go = st.button("청소 페이지로 이동 시도")
 
-with col1:
-    if st.button("🧹 집안 청소 해결사", use_container_width=True):
-        st.switch_page("pages/1_cleaning_helper.py")
-
-
-    if st.button("🧾 고지서 관리사", use_container_width=True):
-        st.switch_page("pages/3_🧾_고지서_관리사.py")
-
-with col2:
-    if st.button("🔧 유지보수 전문가", use_container_width=True):
-        st.switch_page("pages/2_🔧_유지 보수_전문가.py")
-
-    if st.button("🍳 요리 도우미", use_container_width=True):
-        st.switch_page("pages/4_🍳_요리_도우미.py")
-
+if go:
+    st.switch_page("pages/1_cleaning_helper.py")
