@@ -78,7 +78,7 @@ if not has_key:
         st.warning("먼저 왼쪽에서 OpenAI API Key를 입력해 주세요.")
 else:
     if btn_clean:
-        st.switch_page("pages/1_집안 청소_해결사.py")
+        st.switch_page("pages/1_🧹_집안 청소_해결사.py")
 
     if btn_bill:
         st.switch_page("pages/3_🧾_고지서_관리사.py")
