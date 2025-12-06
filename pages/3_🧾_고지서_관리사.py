@@ -1,9 +1,16 @@
 import streamlit as st
 from openai import OpenAI
 import base64
-from utils import get_openai_client
 
-client = get_openai_client()
+if "openai_client" not in st.session_state:
+    st.error("⚠️ OpenAI API Key가 설정되지 않았습니다. 메인 페이지로 돌아가서 Key를 입력해 주세요.")
+    st.stop()
+
+client = st.session_state.get('openai_client', None)
+
+if client is None:
+    st.error("API 키가 설정되지 않았습니다. 먼저 API 키를 입력하세요.")
+    st.stop()
 
 st.title("🧾 고지서 관리 챗봇")
 st.write("고지서를 촬영하거나 업로드하거나, 질문을 입력해 보세요!")

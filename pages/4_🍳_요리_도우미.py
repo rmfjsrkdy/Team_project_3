@@ -1,9 +1,11 @@
 import streamlit as st
 from openai import OpenAI
-from utils import get_openai_client
 
-client = get_openai_client()
+if "openai_client" not in st.session_state:
+    st.error("⚠️ OpenAI API Key가 설정되지 않았습니다. 메인 페이지로 돌아가서 Key를 입력해 주세요.")
+    st.stop()
 
+client = st.session_state.get('openai_client', None)
 
 st.set_page_config(page_title="주방 문제 해결 챗봇", page_icon="🍳")
 
