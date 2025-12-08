@@ -5,14 +5,12 @@ import base64
 st.title("🧹 집안 청소 해결사")
 st.write("집안 청소가 고민되면 사진을 촬영하거나 질문을 입력해 보세요!")
 
-# OpenAI client (이미 메인에서 세션에 저장됨)
-client = st.session_state.get('openai_client', None)
-
-# 혹시 모를 None 방지용
-if client is None:
-    st.error("⚠️ OpenAI 클라이언트가 없습니다. 메인 화면에서 API Key를 먼저 입력해 주세요.")
+#apikey 입력 안됬을 경우
+if "openai_client" not in st.session_state:
+    st.error("⚠️ OpenAI API Key가 설정되지 않았습니다. 메인 페이지로 돌아가서 Key를 입력해 주세요.")
     st.stop()
 
+client = st.session_state.get('openai_client', None)
 
 # -------------------------------
 # 메시지 렌더링 함수
@@ -47,8 +45,7 @@ if "clean_messages" not in st.session_state:
 # -------------------------------
 # 사진 입력 (버튼으로 선택)
 # -------------------------------
-st.subheader("1) 사진은 선택이에요")
-use_camera = st.checkbox("📷 카메라로 찍어서 보내기")
+use_camera = st.checkbox("📷 카메라로 찍어서 청소 상황 알려주기")
 
 image = None
 if use_camera:

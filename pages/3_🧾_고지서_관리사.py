@@ -95,23 +95,28 @@ if prompt := st.chat_input("여기에 메시지를 입력하세요..."):
     # -------------------------------
     # Responses API 호출
     # -------------------------------
-    with st.chat_message("assistant"):
-        with st.spinner("고지서 관리사 생각중..."):
-            response = client.responses.create(
-                model="gpt-4.1",
-                input=[
-                    *[
-                        {"role": msg["role"], "content": msg["content"]}
-                        for msg in st.session_state.bill_messages
-                        if msg["role"] != "assistant"
-                    ],
-                    {"role": "user", "content": content_list},
-                ]
-            )
-
-    assistant_reply = response.output_text
-
-    # assistant 메시지 저장 및 출력
-    assistant_msg = {"role": "assistant", "content": assistant_reply}
-    show_message(assistant_msg)
-    st.session_state.bill_messages.append(assistant_msg)
+    with st.chat_message("assistant") as chat_container:
+        placeholder = st.empty()
+        
+        with placeholder.container():
+            with st.spinner("고지서 관리사 생각중..."):
+                response = client.responses.create(
+                    model="gpt-4.1",
+                    input=[
+                        *[
+                            {"role": msg["role"], "content": msg["content"]}
+                            for msg in st.session_state.bill_messages
+                            if msg["role"] != "assistant"
+                        ],
+                        {"role": "user", "content": content_list},
+                    ]
+                )
+        
+        placeholder.empty()  # 스피너 영역 완전히 제거
+        
+        assistant_reply = response.output_text
+        
+        # assistant 메시지 저장 및 출력
+        st.write(assistant_reply)
+        assistant_msg = {"role": "assistant", "content": assistant_reply}
+        st.session_state.bill_messages.append(assistant_msg)
